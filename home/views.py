@@ -41,7 +41,6 @@ def logout_view(request):
     return redirect('login')
 
 
-
 def admin_check(user):
     return user.is_staff
 
@@ -50,7 +49,7 @@ def admin_check(user):
 @user_passes_test(admin_check, login_url='home')
 def account(request):
     users = User.objects.all()
-    return render(request, 'admin/account.html', {'account': users})
+    return render(request, 'admin/account.html', {'users': users})
 
 
 def chatGoD(request):
@@ -101,4 +100,3 @@ def login_view(request):
             messages.error(request, 'Tên tài khoản hoặc mật khẩu không đúng.')
 
     return render(request, 'home/login.html')
-

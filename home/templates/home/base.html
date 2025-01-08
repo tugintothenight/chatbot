@@ -33,13 +33,9 @@
 <body>
 
   <!-- ======= Sidebar ======= -->
-  <div class="nav-link" style=" font-size: 20px; position: absolute; right: 3%; top: 2%;z-index:999">
-    {% if request.user.is_authenticated %}
-        <i class="bi bi-person-circle"></i>
-        <span>Xin chào, {{ request.user.username }}</span>
-    {% endif %}
-  </div>
+
   <aside id="sidebar" class="sidebar">
+
     <ul class="sidebar-nav" id="sidebar-nav">
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'home' %}">
@@ -206,16 +202,21 @@
   <main id="main" class="main">
 <section class="section">
       <div class="row" style="margin-right: 0px;">
-        <div class="col-lg-12" >
+        <div class="col-lg-12" style="padding-right: 0px;">
 
           <div class="card">
             <div class="card-body" style="height: 100vh">
 
-
+<div class="nav-link" style=" font-size: 20px;float: right; padding-right: 20px; padding-top:20px;">
+    {% if request.user.is_authenticated %}
+        <i class="bi bi-person-circle"></i>
+        <span>Xin chào, {{ request.user.username }}</span>
+    {% endif %}
+  </div>
 				  <i class="bi bi-list toggle-sidebar-btn" style="font-size: 25px;"></i>
 
               <h5 class="card-title">ChatGoD</h5>
-              <p>------------------------------</p>
+              <p>------------------</p>
                 {% block content %}
                 {% endblock %}
             </div>

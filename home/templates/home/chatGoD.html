@@ -4,10 +4,53 @@
 {% block title %}CHAT home page{% endblock %}
 {% block content %}
 
+<!--    <form id="askForm" method="POST">-->
+<!--        {% csrf_token %}-->
+<!--        <div class="card-foot" >-->
+<!--              <input class="chat-input" type="text" name="question" id="question" placeholder="Asking to chatGoD" required>-->
+<!--			  <button class="bi bi-arrow-up-circle-fill but" type="submit"></button>-->
+<!--        </div>-->
+<!--    </form>-->
 
-            <div class="card-foot" >
-              <input class="chat-input" type="text" placeholder="Asking to chatGoD" >
-			  <button class="bi bi-arrow-up-circle-fill but"></button>
+
+<!--    <div id="answerBox" style="background: #f9f9f9; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">-->
+<!--        <p id="answerText">Chưa có câu trả lời.</p>-->
+<!--    </div>-->
+<div class="container">
+        <h1>Hỏi đáp</h1>
+        <form id="askForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="pdf_file">Tải lên file PDF</label>
+                <input type="file" name="pdf_file" id="pdf_file" required>
             </div>
+            <div class="form-group">
+                <label for="question">Nhập câu hỏi của bạn</label>
+                <div class="card-foot" >
+                  <input class="chat-input" type="text" name="question" id="question" placeholder="Asking to chatGoD" required>
+                  <button class="bi bi-arrow-up-circle-fill but" type="submit"></button>
+                </div>
+
+            </div>
+
+        </form>
+        <div id="answer">
+            <h2>Kết quả:</h2>
+            {% if answer %}
+
+            <p id="answer-text">... {{ answer.answer_content }} ...</p>
+
+            {% endif %}
+        </div>
+    </div>
+<form method="POST" action="{% url 'reload' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">reload</button>
+</form>
+
+{% endblock %}
+{% block js %}
+
+
 
 {% endblock %}

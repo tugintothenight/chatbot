@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from home.models import Document
+from home.models import Document, Answer
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -8,7 +8,58 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from home.forms import DocumentForm
+from home.forms import DocumentForm, AnswerForm
+from home.rag import extract_text_from_pdf, split_text_into_chunks, find_relevant_chunks, ask_gemini
+from sentence_transformers import SentenceTransformer
+import logging
+
+logger = logging.getLogger('django')
+# Mô hình Sentence Transformer
+embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+
+
+# View chính để hiển thị giao diện
+def chatGoD(request):
+    documents = Document.objects.all()
+    if request.method == "POST":
+        logger.error("đã nhận POST")
+        question = request.POST.get("question", "")
+        pdf_file = request.FILES.get("pdf_file", None)
+        logger.error("đã nhận file và câu hỏi")
+        if question != "":
+            pdf_text = extract_text_from_pdf(pdf_file)
+            chunks = split_text_into_chunks(pdf_text)
+            relevant_chunks = find_relevant_chunks(question, chunks, embedding_model)
+            combined_context = " ".join(relevant_chunks)
+            answer = ask_gemini(question, combined_context)
+            logger.error(answer)
+            logger.error("đã xử lý file")
+            logger.error("tốn token")
+            form_data = {
+                "ask_content": request.POST.get("question", ""),
+                "answer_content": answer
+            }
+
+            # Khởi tạo form với dữ liệu mới
+            form = AnswerForm(form_data)
+            if form.is_valid():
+                # Lưu dữ liệu từ form
+                ask = form.save(commit=False)
+                ask.uploaded_by = request.user
+                ask.save()
+                logger.error("đã có form")
+                answer = Answer.objects.last()
+                logger.error(answer.answer_content)
+    answer = Answer.objects.last()
+
+    logger.error("hết")
+    return render(request, 'home/chatGoD.html', {'documents': documents, "answer": answer})
+
+
+def reload(request):
+    if request.method == "POST":
+        Answer.objects.all().delete()
+    return redirect('home')
 
 
 def upload(request):
@@ -35,6 +86,10 @@ def upload(request):
                    'documentP': documentP})
 
 
+def select_files(request):
+    return render(request, 'home/select_files.html')
+
+
 def logout_view(request):
     logout(request)
     messages.success(request, 'Đăng xuất thành công.')
@@ -50,12 +105,6 @@ def admin_check(user):
 def account(request):
     users = User.objects.all()
     return render(request, 'admin/account.html', {'users': users})
-
-
-def chatGoD(request):
-    documents = Document.objects.all()
-
-    return render(request, 'home/chatGoD.html', {'documents': documents})
 
 
 def register_view(request):

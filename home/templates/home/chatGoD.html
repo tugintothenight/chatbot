@@ -17,7 +17,7 @@
 <!--        <p id="answerText">Chưa có câu trả lời.</p>-->
 <!--    </div>-->
 <div class="container">
-        <h1>Hỏi đáp</h1>
+
         <form id="askForm" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group">
@@ -25,7 +25,7 @@
                 <input type="file" name="pdf_file" id="pdf_file" required>
             </div>
             <div class="form-group">
-                <label for="question">Nhập câu hỏi của bạn</label>
+
                 <div class="card-foot" >
                   <input class="chat-input" type="text" name="question" id="question" placeholder="Asking to chatGoD" required>
                   <button class="bi bi-arrow-up-circle-fill but" type="submit"></button>

@@ -16,6 +16,7 @@
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
             <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+            <p class="text-center mt-3">Chưa có tài khoản? <a href="{% url 'register' %}">Đăng ký ngay</a></p>
         </form>
 
 <!--        {% if messages %}-->
@@ -35,6 +36,6 @@
         </script>
         {% endif %}
 
-        <p class="text-center mt-3">Chưa có tài khoản? <a href="{% url 'register' %}">Đăng ký ngay</a></p>
+
     </div>
 {% endblock %}

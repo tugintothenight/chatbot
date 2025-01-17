@@ -91,16 +91,19 @@ def chatGoD(request):
     return render(request, 'home/chatGoD.html', {"answer": answer})
 
 
+def admin_check(user):
+    return user.is_staff
+
+
 def reload(request):
     if request.method == "POST":
         Answer.objects.all().delete()
     return redirect('home')
 
 
+@user_passes_test(admin_check, login_url='home')
 def upload(request):
-    if not request.user.is_authenticated:
-        messages.warning(request, "Bạn cần đăng nhập để tiếp tục.")
-        return redirect('login')
+
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
@@ -111,14 +114,12 @@ def upload(request):
             return redirect('upload')
         else:
             messages.error(request, "Có lỗi xảy ra. Vui lòng thử lại.")
-    else:
-        form = DocumentForm()
+
     documents = Document.objects.all()
-    documentP = Document.objects.filter(uploaded_by=request.user)
-    return render(request, 'home/upload.html',
-                  {'form': form,
-                   'documents': documents,
-                   'documentP': documentP})
+
+    return render(request, 'admin/uploadManage.html',
+                  {
+                      'documents': documents})
 
 
 def select_files(request):
@@ -129,10 +130,6 @@ def logout_view(request):
     logout(request)
     messages.success(request, 'Đăng xuất thành công.')
     return redirect('login')
-
-
-def admin_check(user):
-    return user.is_staff
 
 
 @login_required(login_url='login')

@@ -2,15 +2,15 @@
 
 {% load static %}
 
-{% block title %}admin/account{% endblock %}
+{% block title %}admin/file{% endblock %}
 
 {% block content %}
     <div class="pagetitle">
-      <h1>Tài khoản</h1>
+      <h1>Quản lý file tải lên</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Quản lý tài khoản</a></li>
-          <li class="breadcrumb-item active">Tài khoản</li>
+          <li class="breadcrumb-item"><a href="index.html">Quản lý file</a></li>
+          <li class="breadcrumb-item active">quản lý upload</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -21,50 +21,33 @@
 
           <div class="card">
             <div class="card-body">
-              <h3 class="card-title"><b>Danh sách tài khoản</b></h3>
+              <h3 class="card-title"><b>Danh sách file</b></h3>
 			  <div style="display: flex; justify-content: flex-start; padding-left: 20px;">
 				<div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
 					<button type="button" id="addb" class="btn btn-success" ><i class="bi bi-plus-lg"></i></button>
-					<p> Thêm tài khoản</p>
+					<p> tải file lên </p>
 				</div>
 			  </div>
 			  <div class="card">
             <div class="card-body row hide" id="addf" >
-              <h5 class="card-title">Thêm tài khoản</h5>
+              <h5 class="card-title">upload file</h5>
 
               <!-- Vertical Form -->
-                <form>
+                <form  method="post" enctype="multipart/form-data">
+                {% csrf_token %}
                 <div class="col-12">
-                  <label for="inputLName" class="form-label">Tên đăng nhập</label>
-                  <input type="text" class="form-control" id="inputLName">
+                  <label for="file-input" class="form-label">Chọn file:</label>
+                   <input type="file" id="file-input" name="document" accept="application/pdf">
                 </div>
                 <div class="col-12">
-                  <label for="inputPass" class="form-label">Mật khẩu</label>
-                  <input type="password" class="form-control" id="inputPass">
+                  <label for="text-input" class="form-label">chú thích</label>
+                  <input type="text" id="text-input" name="description">
                 </div>
-                <div class="col-12">
-                  <label for="authoritySelect" class="form-label">Quyền</label>                              
-				  <select class="form-select" id="authoritySelect">
-					<option selected>Chọn quyền...</option>				 
-					<option value="1">Quản lý</option>
-					
-					<option value="2">Khách hàng</option>
-					
-				   </select>
-				 </div>
-                <div class="col-12">
-                  <label for="statusSelect" class="form-label">Trạng thái</label>
-                  
-                  <select class="form-select" id="statusSelect">
-					<option selected>Chọn trạng thái hoạt động...</option>				 
-					<option value="1">True</option>
-					<option value="2">False</option>
-					</select>
-              
-                </div>
+
+
                 
                 <div class="text-center">
-                  <button type="submit" class="btn btn-primary">Thêm</button>
+                  <button type="submit" class="btn btn-primary">Upload</button>
                   
                 </div>
               </form><!-- Vertical Form -->
@@ -75,31 +58,23 @@
               <table class="table datatable">
                 <thead>
                   <tr>
-					<th>Mã tài khoản</th>
+					<th>ID</th>
 
-                    <th>Tên đăng nhập</th>                  
-
-
-                    <th>Quyền</th>
-                    <th>Trạng thái</th>
+                    <th>File</th>
+                    <th>Ngày upload</th>
+                    <th>Note</th>
                     <th>hành động</th>
                   </tr>
                 </thead>
                 <tbody>
-                {% for obj in users %}
+                {% for obj in documents %}
                     <tr>
                         <td>{{ obj.id }}</td>
-                        <td>{{ obj.username }}</td>
+                        <td><a href="{{ obj.document.url }}">{{ obj.document.name }}</a></td>
                         <td>
-                            {% if obj.is_superuser %}
-                                Superadmin
-                            {% elif obj.is_staff %}
-                                Staff
-                            {% else %}
-                                User
-                            {% endif %}
+                            {{ obj.uploaded_at }}
                         </td>
-                        <td>{{ obj.is_active }}</td>
+                        <td>{{ obj.description }}</td>
                         <td>
                             <button type="button" class="btn btn-outline-warning">Sửa</button>
                             <button type="button" class="btn btn-outline-danger">Xoá</button>

@@ -106,7 +106,7 @@
 
 	  <li class="nav-heading">Quản lý file</li>
 	  <li class="nav-item">
-        <a class="nav-link collapsed" href="Category.html">
+        <a class="nav-link collapsed" href="{% url 'upload' %}">
           <i class="bi bi-layout-text-window-reverse"></i>
           <span>Quản lý upload</span>
         </a>
@@ -116,7 +116,7 @@
       <li class="nav-heading">Quản lý tài khoản</li>
 
       <li class="nav-item">
-        <a class="nav-link " href="account.html">
+        <a class="nav-link collapsed" href="{% url 'account' %}">
           <i class="bi bi-person"></i>
           <span>Tài khoản</span>
         </a>
@@ -128,7 +128,18 @@
           <span>Phân quyền</span>
         </a>
       </li><!-- End F.A.Q Page Nav -->
-
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#">
+          <i class="bi bi-question-circle"></i>
+          <span></span>
+        </a>
+      </li><!-- End F.A.Q Page Nav -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'home' %}">
+          <i class="bi bi-question-circle"></i>
+          <span>Quay lại trang chat</span>
+        </a>
+      </li><!-- End F.A.Q Page Nav -->
 
 
     </ul>

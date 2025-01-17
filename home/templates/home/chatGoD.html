@@ -2,6 +2,102 @@
 
 {% load static %}
 {% block title %}CHAT home page{% endblock %}
+{% block css %}
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 0;
+            text-align: center;
+        }
+
+        .chat-body {
+            padding: 20px;
+            height: 60vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-message {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .user-message {
+            justify-content: flex-end;
+        }
+
+        .bot-message {
+            justify-content: flex-start;
+        }
+
+        .message {
+            max-width: 60%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            line-height: 1.4;
+        }
+
+        .user-message .message {
+            background-color: #dcf8c6;
+            border-top-right-radius: 0;
+        }
+
+        .bot-message .message {
+            background-color: #f1f0f0;
+            border-top-left-radius: 0;
+        }
+
+        .chat-footer {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .chat-footer input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .chat-footer button {
+            margin-left: 10px;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .chat-footer button:hover {
+            background-color: #45a049;
+        }
+
+{% endblock %}
 {% block content %}
 
 <!--    <form id="askForm" method="POST">-->
@@ -16,41 +112,158 @@
 <!--    <div id="answerBox" style="background: #f9f9f9; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">-->
 <!--        <p id="answerText">Chưa có câu trả lời.</p>-->
 <!--    </div>-->
-<div class="container">
+<!-- -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+<!--<div class="container">-->
 
-        <form id="askForm" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="pdf_file">Tải lên file PDF</label>
-                <input type="file" name="pdf_file" id="pdf_file" required>
-            </div>
-            <div class="form-group">
+<!--        <form id="askForm" method="POST" enctype="multipart/form-data">-->
+<!--            {% csrf_token %}-->
+<!--            <div class="form-group">-->
+<!--                <label for="pdf_file">Tải lên file PDF</label>-->
+<!--                <input type="file" name="pdf_file" id="pdf_file" >-->
+<!--            </div>-->
+<!--            <div class="form-group">-->
 
-                <div class="card-foot" >
-                  <input class="chat-input" type="text" name="question" id="question" placeholder="Asking to chatGoD" required>
-                  <button class="bi bi-arrow-up-circle-fill but" type="submit"></button>
+<!--                <div class="card-foot" >-->
+<!--                  <input class="chat-input" type="text" name="question" id="question" placeholder="Asking to chatGoD" required>-->
+<!--                  <button class="bi bi-arrow-up-circle-fill but" type="submit"></button>-->
+<!--                </div>-->
+
+<!--            </div>-->
+
+<!--        </form>-->
+<!--        <div id="answer">-->
+<!--            <h2>Kết quả:</h2>-->
+<!--            {% if answer %}-->
+
+<!--            <p id="answer-text">... {{ answer.answer_content }} ...</p>-->
+
+<!--            {% endif %}-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--<form method="POST" action="{% url 'reload' %}">-->
+<!--    {% csrf_token %}-->
+<!--    <button type="submit" class="btn btn-danger">reload</button>-->
+<!--</form>-->
+
+
+
+<div class="chat-container">
+        <div class="chat-header">
+
+<form method="POST" action="{% url 'home' %}">
+    {% csrf_token %}
+    <button id="clearChat" type="submit" name="clear_history" class="btn btn-danger">Xóa hội thoại</button>
+</form>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <!-- Tin nhắn sẽ được thêm ở đây -->
+        </div>
+                <form id="askForm" method="POST" enctype="multipart/form-data" action="{% url 'home' %}">
+                {% csrf_token %}
+
+                <div class="form-group">
+
+                    <div class="card-foot" >
+                      <input class="chat-input" type="text" name="question" id="question" placeholder="Asking to chatGoD" required>
+                      <button id="sendButton" class="bi bi-arrow-up-circle-fill but" type="submit"></button>
+                    </div>
+
                 </div>
 
-            </div>
-
-        </form>
-        <div id="answer">
-            <h2>Kết quả:</h2>
-            {% if answer %}
-
-            <p id="answer-text">... {{ answer.answer_content }} ...</p>
-
-            {% endif %}
-        </div>
+            </form>
     </div>
-<form method="POST" action="{% url 'reload' %}">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">reload</button>
-</form>
-
+<div style="display: none">
+<p id="ctrl"> {{ answer.answer_content }}</p>
+</div>
+<div style="display: none">
+<p id="ch"> {{ answer.ask_content }}</p>
+</div>
 {% endblock %}
 {% block js %}
+    const chatBody = document.getElementById("chatBody");
+const askForm = document.getElementById("askForm");
 
+// Hàm thêm tin nhắn vào giao diện
+function addMessage(message, sender) {
+    const messageElement = document.createElement("div");
+    messageElement.classList.add("chat-message", `${sender}-message`);
 
+    const textElement = document.createElement("div");
+    textElement.classList.add("message");
+    textElement.textContent = message;
 
+    messageElement.appendChild(textElement);
+    chatBody.appendChild(messageElement);
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    // Lưu tin nhắn vào localStorage
+    saveMessagesToStorage(message, sender);
+}
+
+// Hàm lưu tin nhắn vào localStorage
+function saveMessagesToStorage(message, sender) {
+    const messages = JSON.parse(localStorage.getItem("chatMessages")) || [];
+    messages.push({ message, sender });
+    localStorage.setItem("chatMessages", JSON.stringify(messages));
+}
+
+// Hàm tải tin nhắn từ localStorage
+function loadMessagesFromStorage() {
+    const messages = JSON.parse(localStorage.getItem("chatMessages")) || [];
+    messages.forEach(({ message, sender }) => addMessage(message, sender));
+}
+
+// Gọi hàm tải tin nhắn khi trang được load
+loadMessagesFromStorage();
+
+// Xử lý sự kiện gửi form
+askForm.addEventListener("submit", async function (e) {
+    e.preventDefault(); // Ngăn form gửi và reload trang
+
+    const question = document.getElementById("question").value.trim();
+    if (!question) return;
+
+    // Hiển thị câu hỏi của người dùng
+    addMessage(question, "user");
+
+    // Gửi dữ liệu lên server
+    const formData = new FormData(this);
+    const response = await fetch(this.action, {
+        method: "POST",
+        body: formData,
+    });
+
+    if (response.ok) {
+        // Nhận HTML từ server
+        const html = await response.text();
+
+        // Tạo một DOM ảo để trích xuất dữ liệu từ HTML
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        // Lấy câu trả lời từ phần tử có ID "ctrl"
+        const botAnswer = doc.getElementById("ctrl").textContent.trim();
+
+        // Hiển thị câu trả lời của bot
+        addMessage(botAnswer, "bot");
+    } else {
+        console.error("Lỗi khi gửi form");
+    }
+
+    // Xóa nội dung trong ô input
+    document.getElementById("question").value = "";
+});
+const clearChatButton = document.getElementById("clearChat");
+
+clearChatButton.addEventListener("click", () => {
+    // Xóa tin nhắn lưu trong localStorage
+    localStorage.removeItem("chatMessages");
+
+    // Xóa toàn bộ nội dung trong giao diện
+    const chatBody = document.getElementById("chatBody");
+    chatBody.innerHTML = "";
+
+    alert("Đã xóa toàn bộ hội thoại!");
+});
 {% endblock %}

@@ -9,9 +9,11 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from home.forms import DocumentForm, AnswerForm
-from home.rag import extract_text_from_pdf, split_text_into_chunks, find_relevant_chunks, ask_gemini
+from home.rag import get_all_pdf_text, split_text_into_chunks, find_relevant_chunks, asking
 from sentence_transformers import SentenceTransformer
 import logging
+import os
+from django.conf import settings
 
 logger = logging.getLogger('django')
 # Mô hình Sentence Transformer
@@ -19,41 +21,74 @@ embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
 
 # View chính để hiển thị giao diện
+def making_context(question, pdf_url='media'):
+    pdf_text = get_all_pdf_text(pdf_url)
+    chunks = split_text_into_chunks(pdf_text)
+    relevant_chunks = find_relevant_chunks(question, chunks, embedding_model)
+    combined_context = " ".join(relevant_chunks)
+    return combined_context
+
+
 def chatGoD(request):
-    documents = Document.objects.all()
+    history = request.session.get("chat_history", [])
     if request.method == "POST":
         logger.error("đã nhận POST")
+        if "clear_history" in request.POST:
+            request.session.pop("chat_history", None)  # Xóa lịch sử khỏi session
+            return render(request, 'home/chatGoD.html', {"answer": None})
         question = request.POST.get("question", "")
-        pdf_file = request.FILES.get("pdf_file", None)
-        logger.error("đã nhận file và câu hỏi")
+        logger.error(question)
+        pdf_file_path = None
+        pdf_folder = os.path.join(settings.MEDIA_ROOT, "documents")
+        logger.error("qua bước nhận file và câu hỏi")
+        # if question != "" and pdf_file is not None:
+        #     logger.error("hỏi rag")
+        #     pdf_text = extract_text_from_pdf(pdf_file)
+        #     chunks = split_text_into_chunks(pdf_text)
+        #     relevant_chunks = find_relevant_chunks(question, chunks, embedding_model)
+        #     combined_context = " ".join(relevant_chunks)
+        #     answer = ask_gemini(question, combined_context)
+        #     logger.error(answer)
+        #     logger.error("đã xử lý file")
+        #     logger.error("tốn token")
+        #     form_data = {
+        #         "ask_content": request.POST.get("question", ""),
+        #         "answer_content": answer
+        #     }
+        #
+        #     # Khởi tạo form với dữ liệu mới
+        #     form = AnswerForm(form_data)
+        #     if form.is_valid():
+        #         # Lưu dữ liệu từ form
+        #         ask = form.save(commit=False)
+        #         ask.uploaded_by = request.user
+        #         ask.save()
+        #         logger.error("đã có form rag")
+        #         answer = Answer.objects.last()
+        #         logger.error(answer.answer_content)
         if question != "":
-            pdf_text = extract_text_from_pdf(pdf_file)
-            chunks = split_text_into_chunks(pdf_text)
-            relevant_chunks = find_relevant_chunks(question, chunks, embedding_model)
-            combined_context = " ".join(relevant_chunks)
-            answer = ask_gemini(question, combined_context)
-            logger.error(answer)
-            logger.error("đã xử lý file")
+            context = making_context(question, pdf_folder)
+            answer = asking(question, context, history)
+            history.append((question, answer))
+            request.session["chat_history"] = history
             logger.error("tốn token")
             form_data = {
                 "ask_content": request.POST.get("question", ""),
                 "answer_content": answer
             }
-
-            # Khởi tạo form với dữ liệu mới
             form = AnswerForm(form_data)
             if form.is_valid():
                 # Lưu dữ liệu từ form
                 ask = form.save(commit=False)
                 ask.uploaded_by = request.user
                 ask.save()
-                logger.error("đã có form")
+                logger.error("đã có form thường")
                 answer = Answer.objects.last()
                 logger.error(answer.answer_content)
     answer = Answer.objects.last()
 
     logger.error("hết")
-    return render(request, 'home/chatGoD.html', {'documents': documents, "answer": answer})
+    return render(request, 'home/chatGoD.html', {"answer": answer})
 
 
 def reload(request):

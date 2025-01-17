@@ -1,7 +1,7 @@
 import PyPDF2
-from sentence_transformers import SentenceTransformer
 import faiss
 import google.generativeai as genai
+import os
 
 # Cấu hình API key của Gemini
 genai.configure(api_key="AIzaSyDeKpc5dNwtaQWQqA45B90-mU4jWHcwIWA")
@@ -17,6 +17,19 @@ def extract_text_from_pdf(pdf_file):
         if text:
             extracted_text += text
     return extracted_text
+
+
+def get_all_pdf_text(directory):
+    all_text = ""
+    if os.path.exists(directory):
+        for file_name in os.listdir(directory):
+            if file_name.endswith(".pdf"):
+                pdf_path = os.path.join(directory, file_name)
+                print(f"Đang xử lý: {pdf_path}")
+                all_text += extract_text_from_pdf(pdf_path)
+    else:
+        print("Thư mục không tồn tại.")
+    return all_text
 
 
 # Chia văn bản thành các đoạn nhỏ
@@ -45,21 +58,43 @@ def find_relevant_chunks(question, chunks, model, top_n=3):
 
 
 # Hỏi mô hình Gemini với ngữ cảnh
-def ask_gemini(question, context=None, history=None):
+# def ask_gemini(question, context=None, history=None):
+#     history_text = ""
+#     if history:
+#         for q, a in history:
+#             history_text += f"Q: {q}\nA: {a}\n"
+#
+#     prompt = f"""
+#     You are a helpful assistant. Answer the question based on the provided context and conversation history.
+#     If the context does not contain the information needed to answer the question, say "I don't know."
+#
+#     Conversation History:
+#     {history_text}
+#
+#     Context: {context}
+#
+#     Question: {question}
+#     """
+#     response = model.generate_content(prompt)
+#     return response.text
+
+
+def asking(question, context=None, history=None):
     history_text = ""
     if history:
         for q, a in history:
             history_text += f"Q: {q}\nA: {a}\n"
 
     prompt = f"""
-    You are a helpful assistant. Answer the question based on the provided context and conversation history.
-    If the context does not contain the information needed to answer the question, say "I don't know."
+    You are a helpful assistant. Answer the question based on the provided context and conversation history. Sometimes, 
+        the context does not contain the information needed to answer the question,
+         just answer as naturally as possible with your knowledge.
 
     Conversation History:
     {history_text}
 
     Context: {context}
-
+    
     Question: {question}
     """
     response = model.generate_content(prompt)

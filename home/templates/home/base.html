@@ -44,125 +44,125 @@
       </li>
 
 
-     <li class="nav-heading">Documents</li>
-        <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#2025-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>2025</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="2025-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          {% for obj in documents %}
-            {% if obj.uploaded_at.year == 2025 %}
-                <li>
-                    <label>{{ obj.id }}. </label>
-                    <a href="{{ obj.document.url }}" style="padding-left: 0px;">{{ obj.document.name }}</a>
-                    <small>(Time: {{ obj.uploaded_at }})</small>
-                </li>
-            {% endif %}
-          {% endfor %}
+<!--     <li class="nav-heading">Documents</li>-->
+<!--        <li class="nav-item">-->
+<!--        <a class="nav-link collapsed" data-bs-target="#2025-nav" data-bs-toggle="collapse" href="#">-->
+<!--          <i class="bi bi-menu-button-wide"></i><span>2025</span><i class="bi bi-chevron-down ms-auto"></i>-->
+<!--        </a>-->
+<!--        <ul id="2025-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">-->
+<!--          {% for obj in documents %}-->
+<!--            {% if obj.uploaded_at.year == 2025 %}-->
+<!--                <li>-->
+<!--                    <label>{{ obj.id }}. </label>-->
+<!--                    <a href="{{ obj.document.url }}" style="padding-left: 0px;">{{ obj.document.name }}</a>-->
+<!--                    <small>(Time: {{ obj.uploaded_at }})</small>-->
+<!--                </li>-->
+<!--            {% endif %}-->
+<!--          {% endfor %}-->
 
-        </ul>
-      </li><!-- End Components Nav -->
+<!--        </ul>-->
+<!--      </li>&lt;!&ndash; End Components Nav &ndash;&gt;-->
 
-         <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#2024-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>2024</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="2024-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          {% for obj in documents %}
-            {% if obj.uploaded_at.year == 2024 %}
-                <li>
-                    <label>{{ obj.id }}. </label>
-                    <a href="{{ obj.document.url }}" style="padding-left: 0px;">{{ obj.document.name }}</a>
-                    <small>(Time: {{ obj.uploaded_at }})</small>
-                </li>
-            {% endif %}
-          {% endfor %}
-            </ul>
-      </li><!-- End Components Nav -->
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#2023-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>2023</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="2023-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          {% for obj in documents %}
-            {% if obj.uploaded_at.year == 2023 %}
-                <li>
-                    <label>{{ obj.id }}. </label>
-                    <a href="{{ obj.document.url }}" style="padding-left: 0px;">{{ obj.document.name }}</a>
-                    <small>(Time: {{ obj.uploaded_at }})</small>
-                </li>
-            {% endif %}
-          {% endfor %}
+<!--         <li class="nav-item">-->
+<!--        <a class="nav-link collapsed" data-bs-target="#2024-nav" data-bs-toggle="collapse" href="#">-->
+<!--          <i class="bi bi-menu-button-wide"></i><span>2024</span><i class="bi bi-chevron-down ms-auto"></i>-->
+<!--        </a>-->
+<!--        <ul id="2024-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">-->
+<!--          {% for obj in documents %}-->
+<!--            {% if obj.uploaded_at.year == 2024 %}-->
+<!--                <li>-->
+<!--                    <label>{{ obj.id }}. </label>-->
+<!--                    <a href="{{ obj.document.url }}" style="padding-left: 0px;">{{ obj.document.name }}</a>-->
+<!--                    <small>(Time: {{ obj.uploaded_at }})</small>-->
+<!--                </li>-->
+<!--            {% endif %}-->
+<!--          {% endfor %}-->
+<!--            </ul>-->
+<!--      </li>&lt;!&ndash; End Components Nav &ndash;&gt;-->
+<!--      <li class="nav-item">-->
+<!--        <a class="nav-link collapsed" data-bs-target="#2023-nav" data-bs-toggle="collapse" href="#">-->
+<!--          <i class="bi bi-menu-button-wide"></i><span>2023</span><i class="bi bi-chevron-down ms-auto"></i>-->
+<!--        </a>-->
+<!--        <ul id="2023-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">-->
+<!--          {% for obj in documents %}-->
+<!--            {% if obj.uploaded_at.year == 2023 %}-->
+<!--                <li>-->
+<!--                    <label>{{ obj.id }}. </label>-->
+<!--                    <a href="{{ obj.document.url }}" style="padding-left: 0px;">{{ obj.document.name }}</a>-->
+<!--                    <small>(Time: {{ obj.uploaded_at }})</small>-->
+<!--                </li>-->
+<!--            {% endif %}-->
+<!--          {% endfor %}-->
 
-        </ul>
-      </li><!-- End Components Nav -->
-        <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#2022-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>2022</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="2022-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          {% for obj in documents %}
-            {% if obj.uploaded_at.year == 2022 %}
-                <li>
-                    <label>{{ obj.id }}. </label>
-                    <a href="{{ obj.document.url }}" style="padding-left: 0px;">{{ obj.document.name }}</a>
-                    <small>(Time: {{ obj.uploaded_at }})</small>
-                </li>
-            {% endif %}
-          {% endfor %}
+<!--        </ul>-->
+<!--      </li>&lt;!&ndash; End Components Nav &ndash;&gt;-->
+<!--        <li class="nav-item">-->
+<!--        <a class="nav-link collapsed" data-bs-target="#2022-nav" data-bs-toggle="collapse" href="#">-->
+<!--          <i class="bi bi-menu-button-wide"></i><span>2022</span><i class="bi bi-chevron-down ms-auto"></i>-->
+<!--        </a>-->
+<!--        <ul id="2022-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">-->
+<!--          {% for obj in documents %}-->
+<!--            {% if obj.uploaded_at.year == 2022 %}-->
+<!--                <li>-->
+<!--                    <label>{{ obj.id }}. </label>-->
+<!--                    <a href="{{ obj.document.url }}" style="padding-left: 0px;">{{ obj.document.name }}</a>-->
+<!--                    <small>(Time: {{ obj.uploaded_at }})</small>-->
+<!--                </li>-->
+<!--            {% endif %}-->
+<!--          {% endfor %}-->
 
-        </ul>
-      </li><!-- End Components Nav -->
-        <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#2021-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>2021</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="2021-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          {% for obj in documents %}
-            {% if obj.uploaded_at.year == 2021 %}
-                <li>
-                    <label>{{ obj.id }}. </label>
-                    <a href="{{ obj.document.url }}" style="padding-left: 0px;">{{ obj.document.name }}</a>
-                    <small>(Time: {{ obj.uploaded_at }})</small>
-                </li>
-            {% endif %}
-          {% endfor %}
+<!--        </ul>-->
+<!--      </li>&lt;!&ndash; End Components Nav &ndash;&gt;-->
+<!--        <li class="nav-item">-->
+<!--        <a class="nav-link collapsed" data-bs-target="#2021-nav" data-bs-toggle="collapse" href="#">-->
+<!--          <i class="bi bi-menu-button-wide"></i><span>2021</span><i class="bi bi-chevron-down ms-auto"></i>-->
+<!--        </a>-->
+<!--        <ul id="2021-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">-->
+<!--          {% for obj in documents %}-->
+<!--            {% if obj.uploaded_at.year == 2021 %}-->
+<!--                <li>-->
+<!--                    <label>{{ obj.id }}. </label>-->
+<!--                    <a href="{{ obj.document.url }}" style="padding-left: 0px;">{{ obj.document.name }}</a>-->
+<!--                    <small>(Time: {{ obj.uploaded_at }})</small>-->
+<!--                </li>-->
+<!--            {% endif %}-->
+<!--          {% endfor %}-->
 
-        </ul>
-      </li><!-- End Components Nav -->
-        <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#2020-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>2020</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="2020-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          {% for obj in documents %}
-            {% if obj.uploaded_at.year == 2020 %}
-                <li>
-                    <label>{{ obj.id }}. </label>
-                    <a href="{{ obj.document.url }}" style="padding-left: 0px;">{{ obj.document.name }}</a>
-                    <small>(Time: {{ obj.uploaded_at }})</small>
-                </li>
-            {% endif %}
-          {% endfor %}
+<!--        </ul>-->
+<!--      </li>&lt;!&ndash; End Components Nav &ndash;&gt;-->
+<!--        <li class="nav-item">-->
+<!--        <a class="nav-link collapsed" data-bs-target="#2020-nav" data-bs-toggle="collapse" href="#">-->
+<!--          <i class="bi bi-menu-button-wide"></i><span>2020</span><i class="bi bi-chevron-down ms-auto"></i>-->
+<!--        </a>-->
+<!--        <ul id="2020-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">-->
+<!--          {% for obj in documents %}-->
+<!--            {% if obj.uploaded_at.year == 2020 %}-->
+<!--                <li>-->
+<!--                    <label>{{ obj.id }}. </label>-->
+<!--                    <a href="{{ obj.document.url }}" style="padding-left: 0px;">{{ obj.document.name }}</a>-->
+<!--                    <small>(Time: {{ obj.uploaded_at }})</small>-->
+<!--                </li>-->
+<!--            {% endif %}-->
+<!--          {% endfor %}-->
 
-        </ul>
-      </li><!-- End Components Nav -->
+<!--        </ul>-->
+<!--      </li>&lt;!&ndash; End Components Nav &ndash;&gt;-->
 
-      <li class="nav-heading">manage</li>
+<!--      <li class="nav-heading">manage</li>-->
 
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="upload">
-          <i class="bi bi-file-earmark-pdf"></i>
-          <span>Upload file</span>
-        </a>
-      </li><!-- End Profile Page Nav -->
+<!--      <li class="nav-item">-->
+<!--        <a class="nav-link collapsed" href="upload">-->
+<!--          <i class="bi bi-file-earmark-pdf"></i>-->
+<!--          <span>Upload file</span>-->
+<!--        </a>-->
+<!--      </li>&lt;!&ndash; End Profile Page Nav &ndash;&gt;-->
 
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'select_file' %}">
-          <i class="bi bi-check2-circle"></i>
-          <span>Chọn file</span>
-        </a>
-      </li><!-- End F.A.Q Page Nav -->
+<!--      <li class="nav-item">-->
+<!--        <a class="nav-link collapsed" href="{% url 'select_file' %}">-->
+<!--          <i class="bi bi-check2-circle"></i>-->
+<!--          <span>Chọn file</span>-->
+<!--        </a>-->
+<!--      </li>&lt;!&ndash; End F.A.Q Page Nav &ndash;&gt;-->
 
 <!--      <li class="nav-item">-->
 <!--        <a class="nav-link collapsed" href="{% url 'register' %}">-->

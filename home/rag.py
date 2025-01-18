@@ -3,6 +3,7 @@ import faiss
 import google.generativeai as genai
 import os
 import googleapiclient.discovery
+import re
 
 # Cấu hình API key của Gemini
 genai.configure(api_key="AIzaSyDeKpc5dNwtaQWQqA45B90-mU4jWHcwIWA")
@@ -80,9 +81,6 @@ def find_relevant_chunks(question, chunks, model, top_n=3):
 #     return response.text
 
 
-
-
-
 # Hàm tìm kiếm trên web (Google Custom Search API)
 def search_web(query):
     # Cấu hình API Key và CSE (Custom Search Engine ID)
@@ -100,14 +98,12 @@ def asking(question, context=None, history=None):
     if history:
         for q, a in history:
             history_text += f"Q: {q}\nA: {a}\n"
-
+    search_result = search_web(question)
     # Tạo prompt cho AI
     prompt = f"""
-    You are a helpful assistant. Answer the question based on the provided context and conversation history. 
-    Sometimes, the context does not contain the information needed to answer the question, 
-    just answer as naturally as possible with your knowledge. 
-    If your knowledge is not enough to answer the question, say: "hmm"
-    search the internet for the most relevant information and use that to provide an accurate response.
+    You are a helpful assistant always response in Vietnamese. The context is the latest trusted source of information from leading expert, so it trusted than the search result. Answer the question extremely based on the provided context and based on the conversation history.
+    
+    When the context does not contain the information needed to answer the question, summary the search result to answer the question. but don't say for me that this is result from the internet.
 
     Conversation History:
     {history_text}
@@ -115,18 +111,13 @@ def asking(question, context=None, history=None):
     Context: {context}
 
     Question: {question}
+    
+    Search result: {search_result}
     """
 
-    # Nếu AI không thể trả lời câu hỏi, thực hiện tìm kiếm trên web
-    if "hmm" in model.generate_content(prompt):  # Kiểm tra nếu AI không biết câu trả lời
-        search_results = search_web(question)
-        # Trích xuất thông tin từ kết quả tìm kiếm
-        result_snippet = search_results[0]['snippet'] if search_results else "I couldn't find relevant information."
-        response_text = f"Search result: {result_snippet}"
-    else:
-        # Nếu AI có thể trả lời, trả về câu trả lời từ model
-        response_text = model.generate_content(prompt).text
+    # Gửi câu hỏi đến mô hình
+    ai_response = model.generate_content(prompt).text
 
-    return response_text
+    # Nếu không có câu trả lời phù hợp, tìm kiếm trên web
 
-
+    return ai_response

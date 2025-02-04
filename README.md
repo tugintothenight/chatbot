@@ -28,3 +28,7 @@
    ```bash
    pip install [tên thư viện]
    ```
+6. **Cài đặt kết nối database** (sử dụng mysql):
+    #### *Thay đổi trong file pythonweb/settings.py*
+7. **API key Gemini**: 
+    #### *Thay đổi trong file pythonweb/rag.py*

@@ -3,10 +3,10 @@ import faiss
 import google.generativeai as genai
 import os
 import googleapiclient.discovery
-import re
+
 
 # Cấu hình API key của Gemini
-genai.configure(api_key="AIzaSyDeKpc5dNwtaQWQqA45B90-mU4jWHcwIWA")
+genai.configure(api_key="AIzaSyAXBfFUDYRLJmMWU6QsxYOSOA4jzgJNG_M")
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 
@@ -50,6 +50,7 @@ def find_relevant_chunks(question, chunks, model, top_n=3):
 
     # Xây dựng FAISS index
     dimension = chunk_embeddings.shape[1]
+
     index = faiss.IndexFlatL2(dimension)
     index.add(chunk_embeddings)
 
@@ -57,28 +58,6 @@ def find_relevant_chunks(question, chunks, model, top_n=3):
     _, top_indices = index.search(question_embedding, top_n)
     relevant_chunks = [chunks[i] for i in top_indices[0]]
     return relevant_chunks
-
-
-# Hỏi mô hình Gemini với ngữ cảnh
-# def ask_gemini(question, context=None, history=None):
-#     history_text = ""
-#     if history:
-#         for q, a in history:
-#             history_text += f"Q: {q}\nA: {a}\n"
-#
-#     prompt = f"""
-#     You are a helpful assistant. Answer the question based on the provided context and conversation history.
-#     If the context does not contain the information needed to answer the question, say "I don't know."
-#
-#     Conversation History:
-#     {history_text}
-#
-#     Context: {context}
-#
-#     Question: {question}
-#     """
-#     response = model.generate_content(prompt)
-#     return response.text
 
 
 # Hàm tìm kiếm trên web (Google Custom Search API)
@@ -101,10 +80,9 @@ def asking(question, context=None, history=None):
     search_result = search_web(question)
     # Tạo prompt cho AI
     prompt = f"""
-    You are a helpful assistant always response in Vietnamese. The context is the latest trusted source of information from leading expert, so it trusted than the search result. Answer the question extremely based on the provided context and based on the conversation history.
-    
+    You are a helpful assistant always response in Vietnamese. The context is the latest trusted source of information from leading expert, so it trusted than the search result. Answer the question based on the provided context and the conversation history.
     When the context does not contain the information needed to answer the question, summary the search result to answer the question. but don't say for me that this is result from the internet.
-
+    sometimes provided Question is not a question, just answer as naturally as possible.
     Conversation History:
     {history_text}
 

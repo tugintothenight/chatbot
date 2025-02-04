@@ -93,6 +93,13 @@
 
         </div>
       </div>
+        <script>
+            {% if messages %}
+                {% for message in messages %}
+                    alert("{{ message }}");
+                {% endfor %}
+            {% endif %}
+        </script>
     </section>
 
 {% endblock %}

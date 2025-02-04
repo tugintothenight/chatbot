@@ -12,7 +12,7 @@
 
         .chat-container {
             width: 100%;
-            max-width: 800px;
+            max-width: 1000px;
             margin: 50px auto;
             background: #fff;
             border-radius: 10px;
@@ -23,15 +23,15 @@
         }
 
         .chat-header {
-            background-color: #4CAF50;
+            background-color: white;
             color: white;
             padding: 0;
-            text-align: center;
+            text-align: right;
         }
 
         .chat-body {
             padding: 20px;
-            height: 60vh;
+            height: 65vh;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -164,7 +164,7 @@
 
                 <div class="form-group">
 
-                    <div class="card-foot" >
+                    <div class="card-foot " >
                       <input class="chat-input" type="text" name="question" id="question" placeholder="Asking to chatGoD" required>
                       <button id="sendButton" class="bi bi-arrow-up-circle-fill but" type="submit"></button>
                     </div>
@@ -236,6 +236,7 @@ askForm.addEventListener("submit", async function (e) {
 
     if (response.ok) {
         // Nhận HTML từ server
+        
         const html = await response.text();
 
         // Tạo một DOM ảo để trích xuất dữ liệu từ HTML

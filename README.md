@@ -20,3 +20,11 @@
    ```bash
    python manage.py migrate
    ```
+4. **Tạo tài khoản admin**:
+   ```bash
+    python manage.py createsuperuser
+   ```
+5. **Cài đặt các thư viện còn thiếu** (có thể chạy runserver để biết thư viện thiếu):
+   ```bash
+   pip install [tên thư viện]
+   ```

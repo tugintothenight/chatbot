@@ -35,6 +35,7 @@ def chatGoD(request):
         logger.error("đã nhận POST")
         if "clear_history" in request.POST:
             request.session.pop("chat_history", None)  # Xóa lịch sử khỏi session
+            Answer.objects.all().delete()
             return render(request, 'home/chatGoD.html', {"answer": None})
         question = request.POST.get("question", "")
         logger.error(question)
@@ -93,12 +94,6 @@ def chatGoD(request):
 
 def admin_check(user):
     return user.is_staff
-
-
-def reload(request):
-    if request.method == "POST":
-        Answer.objects.all().delete()
-    return redirect('home')
 
 
 @user_passes_test(admin_check, login_url='home')

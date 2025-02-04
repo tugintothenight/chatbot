@@ -10,5 +10,4 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('upload/', views.upload, name='upload'),
     path('selected/', views.select_files, name='select_file'),
-    path('reload/', views.reload, name='reload'),
 ]

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from home.models import Document, Answer
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
@@ -30,9 +30,11 @@ def making_context(question, pdf_url='media'):
 
 
 def chatGoD(request):
+
     history = request.session.get("chat_history", [])
     if request.method == "POST":
         logger.error("đã nhận POST")
+        logger.error(request.POST)
         if "clear_history" in request.POST:
             request.session.pop("chat_history", None)  # Xóa lịch sử khỏi session
             Answer.objects.all().delete()
@@ -42,31 +44,7 @@ def chatGoD(request):
         pdf_file_path = None
         pdf_folder = os.path.join(settings.MEDIA_ROOT, "documents")
         logger.error("qua bước nhận file và câu hỏi")
-        # if question != "" and pdf_file is not None:
-        #     logger.error("hỏi rag")
-        #     pdf_text = extract_text_from_pdf(pdf_file)
-        #     chunks = split_text_into_chunks(pdf_text)
-        #     relevant_chunks = find_relevant_chunks(question, chunks, embedding_model)
-        #     combined_context = " ".join(relevant_chunks)
-        #     answer = ask_gemini(question, combined_context)
-        #     logger.error(answer)
-        #     logger.error("đã xử lý file")
-        #     logger.error("tốn token")
-        #     form_data = {
-        #         "ask_content": request.POST.get("question", ""),
-        #         "answer_content": answer
-        #     }
-        #
-        #     # Khởi tạo form với dữ liệu mới
-        #     form = AnswerForm(form_data)
-        #     if form.is_valid():
-        #         # Lưu dữ liệu từ form
-        #         ask = form.save(commit=False)
-        #         ask.uploaded_by = request.user
-        #         ask.save()
-        #         logger.error("đã có form rag")
-        #         answer = Answer.objects.last()
-        #         logger.error(answer.answer_content)
+
         if question != "":
             context = making_context(question, pdf_folder)
             answer = asking(question, context, history)
@@ -98,17 +76,50 @@ def admin_check(user):
 
 @user_passes_test(admin_check, login_url='home')
 def upload(request):
-
     if request.method == 'POST':
+        logger.error("post request")
+        logger.error(request.POST)
+
+        if "delete_document" in request.POST:
+            try:
+                logger.error("Nhận post delete")
+                document_id = request.POST.get("id")  # Lấy ID từ form
+                logger.error(document_id)
+                document = get_object_or_404(Document, id=document_id)
+                if document.document:
+                    file_path = document.document.path
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                document.delete()
+                messages.success(request, "Tài liệu đã được xóa thành công!")
+            except Exception as e:
+                logger.error(f"Lỗi khi xóa tài liệu: {e}")
+                messages.error(request, "Có lỗi xảy ra khi xóa tài liệu. Vui lòng thử lại!")
+            return redirect('upload')
+
+        if "update_note" in request.POST:
+            try:
+                document_id = request.POST.get("id")
+                document = get_object_or_404(Document, id=document_id)
+                document.description = request.POST.get("input-req")
+                document.save()
+                messages.success(request, "Cập nhật mô tả thành công!")
+            except Exception as e:
+                logger.error(f"Lỗi khi cập nhật mô tả: {e}")
+                messages.error(request, "Có lỗi xảy ra khi cập nhật mô tả. Vui lòng thử lại!")
+            return redirect('upload')
+
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            document = form.save(commit=False)
-            document.uploaded_by = request.user
-            document.save()
-            messages.success(request, "Tải lên thành công!")
+            try:
+                document = form.save(commit=False)
+                document.uploaded_by = request.user
+                document.save()
+                messages.success(request, "Tải lên thành công!")
+            except Exception as e:
+                logger.error(f"Lỗi khi tải lên tài liệu: {e}")
+                messages.error(request, "Có lỗi xảy ra khi tải lên. Vui lòng thử lại!")
             return redirect('upload')
-        else:
-            messages.error(request, "Có lỗi xảy ra. Vui lòng thử lại.")
 
     documents = Document.objects.all()
 
@@ -131,6 +142,31 @@ def logout_view(request):
 @user_passes_test(admin_check, login_url='home')
 def account(request):
     users = User.objects.all()
+    if "delete_account" in request.POST:
+        account_id = request.POST.get("id")  # Lấy ID từ form
+        acc = get_object_or_404(User, id=account_id)
+        acc.delete()  # Xóa tài liệu trong database
+        messages.success(request, "Tài khoản đã được xóa thành công!")
+        return redirect('account')
+    if "update_auth" in request.POST:
+        try:
+            account_id = request.POST.get("id")
+            account = get_object_or_404(User, id=account_id)
+            if request.POST.get("newauth") == "Superadmin":
+                account.is_superuser = True
+                account.is_staff = True
+            elif request.POST.get("newauth") == "Staff":
+                account.is_superuser = False
+                account.is_staff = True
+            else:
+                account.is_superuser = False
+                account.is_staff = False
+            account.save()
+            messages.success(request, "Cập nhật thành công!")
+        except Exception as e:
+            logger.error(f"Lỗi khi cập nhật mô tả: {e}")
+            messages.error(request, "Có lỗi xảy ra khi cập nhật mô tả. Vui lòng thử lại!")
+        return redirect('account')
     return render(request, 'admin/account.html', {'users': users})
 
 

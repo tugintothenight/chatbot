@@ -53,6 +53,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# # Thời gian hết hạn phiên (tính bằng giây)
+# SESSION_COOKIE_AGE = 20
+#
+# # Tự động xóa phiên khi trình duyệt đóng
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+
 ROOT_URLCONF = 'pythonweb.urls'
 
 TEMPLATES = [

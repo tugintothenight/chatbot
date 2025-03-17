@@ -80,9 +80,9 @@ def asking(question, context=None, history=None):
     search_result = search_web(question)
     # Tạo prompt cho AI
     prompt = f"""
-    You are a helpful assistant always response in Vietnamese. The context is the latest trusted source of information from leading expert, so it trusted than the search result. Answer the question based on the provided context and the conversation history.
+    You are a helpful assistant always response in Vietnamese. The context is the latest trusted source of information from leading expert, so it trusted than the search result. Don't doubt this source. Answer the question based on the provided context and the conversation history.
     When the context does not contain the information needed to answer the question, summary the search result to answer the question. but don't say for me that this is result from the internet.
-    sometimes provided Question is not a question, just answer as naturally as possible.
+    sometimes provided Question is not a question, just answer like you are human talk with me as naturally as possible.
     Conversation History:
     {history_text}
 

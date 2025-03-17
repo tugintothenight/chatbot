@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from home.models import Document, Answer
+from home.models import Document, Answer, ProcessedDocument
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -9,65 +9,127 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from home.forms import DocumentForm, AnswerForm
-from home.rag import get_all_pdf_text, split_text_into_chunks, find_relevant_chunks, asking
-from sentence_transformers import SentenceTransformer
+from home.rag import split_text_into_chunks, asking, extract_text_from_pdf
 import logging
 import os
-from django.conf import settings
+from sentence_transformers import SentenceTransformer
+import faiss
+import numpy as np
+import pickle
+# from django.utils.timezone import now
+# from datetime import datetime
 
 logger = logging.getLogger('django')
 # Mô hình Sentence Transformer
 embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
 
-# View chính để hiển thị giao diện
-def making_context(question, pdf_url='media'):
-    pdf_text = get_all_pdf_text(pdf_url)
-    chunks = split_text_into_chunks(pdf_text)
-    relevant_chunks = find_relevant_chunks(question, chunks, embedding_model)
-    combined_context = " ".join(relevant_chunks)
-    return combined_context
+def process_new_documents():
+    # Lấy các tài liệu chưa xử lý
+    unprocessed_docs = Document.objects.filter(is_processed=False)
+
+    for doc in unprocessed_docs:
+        file_path = doc.document.path
+        text_content = extract_text_from_pdf(file_path)  # Trích xuất nội dung từ file
+        logger.error(1)
+        # Chia nhỏ thành các đoạn
+        chunks = split_text_into_chunks(text_content)
+        # Tạo embedding cho các đoạn văn bản
+        chunk_embeddings = np.array(embedding_model.encode(chunks))
+        # logger.error("chunks: %s, chunks_emb: %s",chunks, chunk_embeddings)
+
+        # Lưu thông tin vào bảng ProcessedDocument, lưu chunk_embeddings thay vì faiss_index
+        ProcessedDocument.objects.create(
+            file_name=doc,
+            text_content=text_content,
+            embeddings=pickle.dumps(chunk_embeddings), # Lưu chunk_embeddings
+            document=doc
+        )
+        # Đánh dấu tài liệu đã xử lý
+        doc.is_processed = True
+        doc.save()
+        logger.error(3)
+def making_context(question):
+    processed_docs = ProcessedDocument.objects.all()
+
+    dimension = embedding_model.encode(["sample"]).shape[1]
+    faiss_index = faiss.IndexFlatL2(dimension)
+
+    all_chunks = []
+    all_embeddings = [] # Thêm danh sách để lưu trữ embeddings
+
+    for doc in processed_docs:
+        if doc.embeddings:
+            try:
+                embeddings = pickle.loads(doc.embeddings)
+                if isinstance(embeddings, np.ndarray): # Kiểm tra xem embeddings có phải là mảng NumPy không
+                    faiss_index.add(embeddings)
+                    all_chunks.extend(split_text_into_chunks(doc.text_content))
+                    all_embeddings.append(embeddings) # Lưu trữ embeddings
+                else:
+                    print(f"doc.embeddings không phải là mảng NumPy: {type(embeddings)}")
+            except pickle.UnpicklingError:
+                print(f"Lỗi giải mã pickle cho doc.embeddings")
+
+    if faiss_index.ntotal == 0:
+        print("FAISS index rỗng. Không có dữ liệu để tìm kiếm.")
+        return ""
+
+    question_embedding = embedding_model.encode([question])
+    distances, top_indices = faiss_index.search(question_embedding, 3)
+
+    if top_indices.shape[1] == 0:
+        print("Không tìm thấy kết quả phù hợp.")
+        return ""
+
+    relevant_chunks = [all_chunks[i] for i in top_indices[0]]
+    return " ".join(relevant_chunks)
 
 
 def chatGoD(request):
+    # last_activity = request.session.get('last_activity')
+    #
+    # if last_activity:
+    #     # Chuyển đổi từ chuỗi sang datetime
+    #     last_activity = datetime.fromisoformat(last_activity)
+    #     elapsed_time = (now() - last_activity).total_seconds()
+    #     if elapsed_time > 20:
+    #         messages.error(request, "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.")
+    #         return redirect('login')
+    #
+    # # Cập nhật thời gian hoạt động cuối cùng
+    # request.session['last_activity'] = now().isoformat()
 
     history = request.session.get("chat_history", [])
     if request.method == "POST":
-        logger.error("đã nhận POST")
-        logger.error(request.POST)
         if "clear_history" in request.POST:
-            request.session.pop("chat_history", None)  # Xóa lịch sử khỏi session
+            request.session.pop("chat_history", None)
             Answer.objects.all().delete()
             return render(request, 'home/chatGoD.html', {"answer": None})
-        question = request.POST.get("question", "")
-        logger.error(question)
-        pdf_file_path = None
-        pdf_folder = os.path.join(settings.MEDIA_ROOT, "documents")
-        logger.error("qua bước nhận file và câu hỏi")
 
-        if question != "":
-            context = making_context(question, pdf_folder)
+        question = request.POST.get("question", "")
+        if question:
+            context = making_context(question)
+
             answer = asking(question, context, history)
             history.append((question, answer))
             request.session["chat_history"] = history
-            logger.error("tốn token")
+
             form_data = {
-                "ask_content": request.POST.get("question", ""),
+                "ask_content": question,
                 "answer_content": answer
             }
             form = AnswerForm(form_data)
             if form.is_valid():
-                # Lưu dữ liệu từ form
                 ask = form.save(commit=False)
-                ask.uploaded_by = request.user
+                if request.user.is_authenticated:
+                    ask.uploaded_by = request.user
+                else:
+                    messages.error(request, "Bạn cần đăng nhập để tiếp tục.")
+                    return redirect('login')
                 ask.save()
-                logger.error("đã có form thường")
-                answer = Answer.objects.last()
-                logger.error(answer.answer_content)
-    answer = Answer.objects.last()
 
-    logger.error("hết")
-    return render(request, 'home/chatGoD.html', {"answer": answer})
+    return render(request, 'home/chatGoD.html', {"answer": Answer.objects.last()})
 
 
 def admin_check(user):
@@ -77,24 +139,16 @@ def admin_check(user):
 @user_passes_test(admin_check, login_url='home')
 def upload(request):
     if request.method == 'POST':
-        logger.error("post request")
-        logger.error(request.POST)
-
         if "delete_document" in request.POST:
             try:
-                logger.error("Nhận post delete")
-                document_id = request.POST.get("id")  # Lấy ID từ form
-                logger.error(document_id)
+                document_id = request.POST.get("id")
                 document = get_object_or_404(Document, id=document_id)
-                if document.document:
-                    file_path = document.document.path
-                    if os.path.exists(file_path):
-                        os.remove(file_path)
+                if document.document and os.path.exists(document.document.path):
+                    os.remove(document.document.path)
                 document.delete()
                 messages.success(request, "Tài liệu đã được xóa thành công!")
             except Exception as e:
-                logger.error(f"Lỗi khi xóa tài liệu: {e}")
-                messages.error(request, "Có lỗi xảy ra khi xóa tài liệu. Vui lòng thử lại!")
+                messages.error(request, "Có lỗi khi xóa tài liệu.")
             return redirect('upload')
 
         if "update_note" in request.POST:
@@ -105,27 +159,26 @@ def upload(request):
                 document.save()
                 messages.success(request, "Cập nhật mô tả thành công!")
             except Exception as e:
-                logger.error(f"Lỗi khi cập nhật mô tả: {e}")
-                messages.error(request, "Có lỗi xảy ra khi cập nhật mô tả. Vui lòng thử lại!")
+                messages.error(request, "Có lỗi khi cập nhật mô tả.")
             return redirect('upload')
 
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
+            document = form.save(commit=False)
             try:
-                document = form.save(commit=False)
                 document.uploaded_by = request.user
                 document.save()
+                process_new_documents()
                 messages.success(request, "Tải lên thành công!")
             except Exception as e:
-                logger.error(f"Lỗi khi tải lên tài liệu: {e}")
-                messages.error(request, "Có lỗi xảy ra khi tải lên. Vui lòng thử lại!")
+                messages.error(request, "Có lỗi khi tải lên.")
+                logger.error("e:", e)
+                document.delete()
+                os.remove(document.document.path)
             return redirect('upload')
 
     documents = Document.objects.all()
-
-    return render(request, 'admin/uploadManage.html',
-                  {
-                      'documents': documents})
+    return render(request, 'admin/uploadManage.html', {'documents': documents})
 
 
 def select_files(request):

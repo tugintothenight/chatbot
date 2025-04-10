@@ -96,7 +96,7 @@ h6 {
 /* Dropdown menus */
 .dropdown-menu {
   border-radius: 4px;
-  padding: 10px 0;
+  padding: 10px 10px;
   animation-name: dropdown-animate;
   animation-duration: 0.2s;
   animation-fill-mode: both;
@@ -254,16 +254,16 @@ h6 {
 }
 
 .chat-input {
-	width: 60vw;
+	width: 50vw;
 	height: 8vh;
 	padding-left: 30px;
-	margin-bottom: 20px;
+	margin-bottom: 0px;
 	margin-left: 5.5%;
 	border-radius: 30px 0 0 30px ;
 	background-color: #F0F0F0;
 	border: 1px;
 	outline: none;
-}	
+}
 
 .but {
     border-radius: 0 50% 50% 0;
@@ -1264,4 +1264,6 @@ h6 {
   font-size: 13px;
   color: #012970;
 }
-
+.hide {
+    display: none;
+}

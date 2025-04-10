@@ -76,7 +76,7 @@ def making_context(question):
         return ""
 
     question_embedding = embedding_model.encode([question])
-    distances, top_indices = faiss_index.search(question_embedding, 3)
+    distances, top_indices = faiss_index.search(question_embedding, 5)
 
     if top_indices.shape[1] == 0:
         print("Không tìm thấy kết quả phù hợp.")
@@ -110,7 +110,7 @@ def chatGoD(request):
         question = request.POST.get("question", "")
         if question:
             context = making_context(question)
-
+            print("context:", context)
             answer = asking(question, context, history)
             history.append((question, answer))
             request.session["chat_history"] = history

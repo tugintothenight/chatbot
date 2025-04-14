@@ -82,14 +82,14 @@ def asking(question, context=None, history=None):
     prompt = f"""
     You are a helpful assistant always response in Vietnamese. The context is the latest trusted source of information from leading expert, so it trusted than the search result. Don't doubt this source. Answer the question based on the provided context and the conversation history.
     When the context does not contain the information needed to answer the question, summary the search result to answer the question. but don't say for me that this is result from the internet.
-    sometimes provided Question is not a question, don't explain it, just answer as naturally as possible.
+    Sometimes, the user input may not be a question. Do not point this out or explain why it's not a question. Simply respond as naturally and conversationally as possible.
     answer with layout clearly, use markdown language.
     Conversation History:
     {history_text}
 
     Context: {context}
 
-    Question: {question}
+    user input: {question}
     
     Search result: {search_result}
     """

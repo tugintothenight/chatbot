@@ -49,6 +49,8 @@ def process_new_documents():
         doc.is_processed = True
         doc.save()
         logger.error(3)
+
+
 def making_context(question):
     processed_docs = ProcessedDocument.objects.all()
 
@@ -87,19 +89,6 @@ def making_context(question):
 
 
 def chatGoD(request):
-    # last_activity = request.session.get('last_activity')
-    #
-    # if last_activity:
-    #     # Chuyển đổi từ chuỗi sang datetime
-    #     last_activity = datetime.fromisoformat(last_activity)
-    #     elapsed_time = (now() - last_activity).total_seconds()
-    #     if elapsed_time > 20:
-    #         messages.error(request, "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.")
-    #         return redirect('login')
-    #
-    # # Cập nhật thời gian hoạt động cuối cùng
-    # request.session['last_activity'] = now().isoformat()
-
     history = request.session.get("chat_history", [])
     if request.method == "POST":
         if "clear_history" in request.POST:

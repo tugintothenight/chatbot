@@ -212,6 +212,11 @@ def account(request):
     return render(request, 'admin/account.html', {'users': users})
 
 
+def admin_base(request):
+    users = User.objects.all()
+    return render(request, 'admin/adminBase.html', {'users': users})
+
+
 def register_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')

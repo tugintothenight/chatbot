@@ -100,6 +100,21 @@
         .chat-footer button:hover {
             background-color: #45a049;
         }
+        .typing-cursor {
+          display: inline-block;
+          width: 1px;
+          background-color: black;
+          animation: blink 1s step-start infinite;
+          height: 1em;
+          vertical-align: bottom;
+          margin-left: 2px;
+        }
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
 
 {% endblock %}
 {% block content %}
@@ -211,9 +226,43 @@ askForm.addEventListener("submit", async function (e) {
 
         // Lấy câu trả lời từ phần tử có ID "ctrl"
         const botAnswer = doc.getElementById("ctrl").textContent.trim();
+        // Hàm hiệu ứng đánh máy cho bot
+        function typeBotMessage(markdownMessage) {
+    const messageElement = document.createElement("div");
+    messageElement.classList.add("chat-message", "bot-message");
 
-        // Hiển thị câu trả lời của bot
-        addMessage(botAnswer, "bot");
+    const textElement = document.createElement("div");
+    textElement.classList.add("message");
+    const cursor = document.createElement("span");
+    cursor.classList.add("typing-cursor");
+
+    messageElement.appendChild(textElement);
+    textElement.appendChild(cursor);
+    chatBody.appendChild(messageElement);
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    let index = 0;
+
+    function typeWriter() {
+        if (index < markdownMessage.length) {
+            // Thêm ký tự thô (chưa markdown)
+            cursor.insertAdjacentText("beforebegin", markdownMessage.charAt(index));
+            index++;
+            chatBody.scrollTop = chatBody.scrollHeight;
+            setTimeout(typeWriter, 150);
+        } else {
+            cursor.remove();
+            // Sau khi gõ xong, chuyển toàn bộ thành HTML
+            textElement.innerHTML = marked.parse(markdownMessage);
+        }
+    }
+
+    typeWriter();
+    saveMessagesToStorage(markdownMessage, "bot");
+}
+
+
+        typeBotMessage(botAnswer);
     } else {
         alert("vui lòng thử lại");
     }

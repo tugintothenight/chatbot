@@ -3,7 +3,7 @@
 {% load static %}
 {% block title %}Register{% endblock %}
 {% block content %}
-
+<div style="padding-left: 20%; padding-right:20%;">
     <div class="container mt-5">
         <h2 class="text-center">Đăng ký tài khoản</h2>
         <form method="post" action="{% url 'register' %}">
@@ -33,4 +33,5 @@
         {% endif %}
         <p class="text-center mt-3">Đã có tài khoản? <a href="{% url 'login' %}">Đăng nhập ngay</a></p>
     </div>
+</div>
 {% endblock %}

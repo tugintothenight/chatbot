@@ -36,7 +36,6 @@ def process_new_documents():
         chunks = split_text_into_chunks(text_content)
         # Tạo embedding cho các đoạn văn bản
         chunk_embeddings = np.array(embedding_model.encode(chunks))
-        # logger.error("chunks: %s, chunks_emb: %s",chunks, chunk_embeddings)
 
         # Lưu thông tin vào bảng ProcessedDocument, lưu chunk_embeddings thay vì faiss_index
         ProcessedDocument.objects.create(
@@ -53,13 +52,10 @@ def process_new_documents():
 
 def making_context(question):
     processed_docs = ProcessedDocument.objects.all()
-
     dimension = embedding_model.encode(["sample"]).shape[1]
     faiss_index = faiss.IndexFlatL2(dimension)
-
     all_chunks = []
-    all_embeddings = [] # Thêm danh sách để lưu trữ embeddings
-
+    all_embeddings = []
     for doc in processed_docs:
         if doc.embeddings:
             try:
@@ -69,21 +65,18 @@ def making_context(question):
                     all_chunks.extend(split_text_into_chunks(doc.text_content))
                     all_embeddings.append(embeddings) # Lưu trữ embeddings
                 else:
-                    print(f"doc.embeddings không phải là mảng NumPy: {type(embeddings)}")
+                    print(f"doc.embeddings không phải là mảng NumPy: "
+                          f"{type(embeddings)}")
             except pickle.UnpicklingError:
                 print(f"Lỗi giải mã pickle cho doc.embeddings")
-
     if faiss_index.ntotal == 0:
         print("FAISS index rỗng. Không có dữ liệu để tìm kiếm.")
         return ""
-
     question_embedding = embedding_model.encode([question])
     distances, top_indices = faiss_index.search(question_embedding, 5)
-
     if top_indices.shape[1] == 0:
         print("Không tìm thấy kết quả phù hợp.")
         return ""
-
     relevant_chunks = [all_chunks[i] for i in top_indices[0]]
     return " ".join(relevant_chunks)
 
@@ -170,10 +163,6 @@ def upload(request):
     return render(request, 'admin/uploadManage.html', {'documents': documents})
 
 
-def select_files(request):
-    return render(request, 'home/select_files.html')
-
-
 def logout_view(request):
     logout(request)
     messages.success(request, 'Đăng xuất thành công.')
@@ -210,11 +199,6 @@ def account(request):
             messages.error(request, "Có lỗi xảy ra khi cập nhật mô tả. Vui lòng thử lại!")
         return redirect('account')
     return render(request, 'admin/account.html', {'users': users})
-
-
-def admin_base(request):
-    users = User.objects.all()
-    return render(request, 'admin/adminBase.html', {'users': users})
 
 
 def register_view(request):

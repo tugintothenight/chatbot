@@ -123,10 +123,6 @@
 <div class="chat-container">
         <div class="chat-header">
 
-<form method="POST" action="{% url 'home' %}">
-    {% csrf_token %}
-    <button id="clearChat" type="submit" name="clear_history" class="btn btn-danger">Xóa hội thoại</button>
-</form>
         </div>
         <div class="chat-body" id="chatBody">
             <!-- Tin nhắn sẽ được thêm ở đây -->
@@ -249,7 +245,7 @@ askForm.addEventListener("submit", async function (e) {
             cursor.insertAdjacentText("beforebegin", markdownMessage.charAt(index));
             index++;
             chatBody.scrollTop = chatBody.scrollHeight;
-            setTimeout(typeWriter, 150);
+            setTimeout(typeWriter, 10);
         } else {
             cursor.remove();
             // Sau khi gõ xong, chuyển toàn bộ thành HTML
